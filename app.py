@@ -14,17 +14,19 @@ html_code = """
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
     
+    /* إعدادات الصفحة الأساسية */
     body {
         background-color: #0d1117; color: white; font-family: 'Inter', sans-serif;
-        margin: 0; padding: 0; display: flex; justify-content: center; align-items: flex-start;
-        min-height: 100vh; overflow-x: hidden; /* منع أي سكرول جانبي */
+        margin: 0; padding: 0; 
+        display: flex; justify-content: center; align-items: center; /* توسيط أفقي ورأسي */
+        min-height: 100vh; overflow: hidden; /* منع السكرول */
     }
 
-    /* الحاوية الرئيسية */
+    /* الحاوية اللي شايلة الساعة والموبايل */
     .app-container {
-        display: flex; justify-content: center; align-items: flex-start; gap: 30px;
-        padding: 20px 10px;
-        transform-origin: top center;
+        display: flex; justify-content: center; align-items: flex-start; gap: 40px;
+        width: max-content; /* عرض حسب المحتوى */
+        transform-origin: center center;
     }
     
     /* ----- Watch ----- */
@@ -98,13 +100,10 @@ html_code = """
     .nav-item { font-size: 22px; cursor: pointer; opacity: 0.5; transition: 0.2s; }
     .nav-item.active { opacity: 1; transform: scale(1.1); }
 
-    /* ----- الحل السحري للموبايل (Responsive) ----- */
+    /* ----- الحل النهائي للموبايل ----- */
     @media (max-width: 800px) {
         .app-container {
-            zoom: 0.55; /* تصغير حقيقي بيأثر على المساحة نفسها */
-            flex-direction: row; 
-            gap: 15px;
-            padding: 10px;
+            transform: scale(0.45); /* تصغير الحجم ليناسب الموبايل */
         }
     }
 </style>
@@ -306,4 +305,5 @@ html_code = """
 </html>
 """
 
-components.html(html_code, height=600)
+# قللنا الـ height لـ 450 عشان المساحة السودة تحت تختفي
+components.html(html_code, height=450)
