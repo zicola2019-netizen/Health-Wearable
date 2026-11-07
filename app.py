@@ -17,16 +17,17 @@ html_code = """
     /* إعدادات الصفحة الأساسية */
     body {
         background-color: #0d1117; color: white; font-family: 'Inter', sans-serif;
-        margin: 0; padding: 0; 
-        display: flex; justify-content: center; align-items: center; /* توسيط أفقي ورأسي */
-        min-height: 100vh; overflow: hidden; /* منع السكرول */
+        margin: 0; padding: 0; height: 100vh; overflow: hidden;
     }
 
-    /* الحاوية اللي شايلة الساعة والموبايل */
+    /* الحاوية الرئيسية - هنثبتها في نص الشاشة بالظبط */
     .app-container {
         display: flex; justify-content: center; align-items: flex-start; gap: 40px;
-        width: max-content; /* عرض حسب المحتوى */
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%); /* سر التوسيط */
         transform-origin: center center;
+        transition: transform 0.3s ease;
     }
     
     /* ----- Watch ----- */
@@ -103,7 +104,8 @@ html_code = """
     /* ----- الحل النهائي للموبايل ----- */
     @media (max-width: 800px) {
         .app-container {
-            transform: scale(0.45); /* تصغير الحجم ليناسب الموبايل */
+            transform: translate(-50%, -50%) scale(0.45); /* تصغير + توسيط في نفس الوقت */
+            gap: 20px;
         }
     }
 </style>
@@ -305,5 +307,5 @@ html_code = """
 </html>
 """
 
-# قللنا الـ height لـ 450 عشان المساحة السودة تحت تختفي
-components.html(html_code, height=450)
+# قللنا الـ height لـ 400 عشان المساحة السودة تختفي تماماً
+components.html(html_code, height=400)
