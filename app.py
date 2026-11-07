@@ -16,13 +16,14 @@ html_code = """
     
     body {
         background-color: #0d1117; color: white; font-family: 'Inter', sans-serif;
-        margin: 0; padding: 20px; display: flex; justify-content: center;
+        margin: 0; padding: 0; display: flex; justify-content: center; align-items: flex-start;
+        min-height: 100vh; overflow-x: hidden; /* منع السكرول العرضي */
     }
 
-    /* الحاوية اللي شايلة الساعة والموبايل */
     .app-container {
-        display: flex; justify-content: center; align-items: flex-start; gap: 40px; flex-wrap: wrap;
-        transform-origin: top center; /* التصغير هيبدأ من فوق */
+        display: flex; justify-content: center; align-items: flex-start; gap: 40px;
+        transform-origin: top center;
+        padding-top: 20px;
     }
     
     /* ----- Watch ----- */
@@ -96,27 +97,20 @@ html_code = """
     .nav-item { font-size: 22px; cursor: pointer; opacity: 0.5; transition: 0.2s; }
     .nav-item.active { opacity: 1; transform: scale(1.1); }
 
-    /* ----- Responsive CSS (للشاشات الصغيرة زي الموبايل) ----- */
-    @media (max-width: 700px) {
+    /* ----- Responsive (تظبيط الموبايل) ----- */
+    @media (max-width: 800px) {
         .app-container {
-            transform: scale(0.6); /* تصغير الحجم لـ 60% */
-            flex-wrap: nowrap; /* نخليهم جنب بعض */
-            gap: 10px; /* تقليل المسافة بينهم */
-            margin-top: -50px; /* رفعهم لفوق شوية عشان التصغير بيسيب مساحة */
-        }
-    }
-
-    /* لو الشاشة أصغر من 400 بكسل (موبايلات صغيرة جداً) */
-    @media (max-width: 400px) {
-        .app-container {
-            transform: scale(0.45); /* تصغير أكتر */
+            transform: scale(0.55); /* صغر الحجم */
+            width: 181%; /* عوض المساحة اللي قلصناها */
+            margin-left: -40.5%; /* رجعهم في النص */
+            flex-wrap: nowrap; 
+            gap: 15px;
         }
     }
 </style>
 </head>
 <body>
 
-    <!-- الحاوية الرئيسية -->
     <div class="app-container">
         <!-- Watch -->
         <div class="watch-wrapper">
@@ -312,4 +306,5 @@ html_code = """
 </html>
 """
 
-components.html(html_code, height=750)
+# قللنا الـ height من 750 لـ 600 عشان نقلل المساحة السودة اللي تحت
+components.html(html_code, height=600)
