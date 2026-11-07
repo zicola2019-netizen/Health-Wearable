@@ -308,4 +308,6 @@ html_code = """
 """
 
 # قللنا الـ height لـ 400 عشان المساحة السودة تختفي تماماً
+st.markdown("<h1 style='text-align: center; color: #00f3ff; font-family: monospace; text-shadow: 0 0 15px rgba(0,243,255,0.5);'>⌚ Smart Wearable Ecosystem</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #888;'>Live Health Telemetry & AI Diagnostics</p>", unsafe_allow_html=True)
 components.html(html_code, height=400)
