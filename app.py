@@ -183,11 +183,24 @@ html_code = """
         let currentHR = 75;
         let currentSpO2 = 98;
 
+        // 👇 هنا التعديل: ضفنا التوصيات الفورية للـ AI
         const modes = {
-            normal: { hr: 75, spo2: 98, status: "NORMAL", color: "#32d74b", ai: "✅ All vitals are stable. You are good to go!", danger: false },
-            sleep:  { hr: 55, spo2: 96, status: "SLEEPING", color: "#32ade6", ai: "😴 Sleep mode active. Tracking sleep cycles...", danger: false },
-            stress: { hr: 115, spo2: 97, status: "HIGH STRESS", color: "#ff9f0a", ai: "⚠️ Elevated heart rate detected. You seem stressed.", danger: false },
-            fall:   { hr: 145, spo2: 85, status: "EMERGENCY", color: "#ff3b30", ai: "🚨 CRITICAL EMERGENCY! Fall detected and SpO2 dropping.", danger: true }
+            normal: { 
+                hr: 75, spo2: 98, status: "NORMAL", color: "#32d74b", danger: false,
+                ai: "✅ All vitals are stable. You are good to go! Keep up the good work and stay hydrated." 
+            },
+            sleep:  { 
+                hr: 55, spo2: 96, status: "SLEEPING", color: "#32ade6", danger: false,
+                ai: "😴 Sleep mode active. Ensure you are in a comfortable position and relax. Sweet dreams!" 
+            },
+            stress: { 
+                hr: 115, spo2: 97, status: "HIGH STRESS", color: "#ff9f0a", danger: false,
+                ai: "⚠️ Elevated heart rate detected. Please take a deep breath, sit down, drink a glass of water, and try to relax for 5 minutes." 
+            },
+            fall:   { 
+                hr: 145, spo2: 85, status: "EMERGENCY", color: "#ff3b30", danger: true,
+                ai: "🚨 CRITICAL EMERGENCY! Fall detected. If you are conscious, please stay still, take slow deep breaths to stabilize your heart rate, and seek help immediately. SOS sent." 
+            }
         };
 
         // --- Charts Initialization ---
