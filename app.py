@@ -13,9 +13,16 @@ html_code = """
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+    
     body {
         background-color: #0d1117; color: white; font-family: 'Inter', sans-serif;
-        display: flex; justify-content: center; align-items: flex-start; gap: 40px; min-height: 100vh; margin: 0; padding: 20px; flex-wrap: wrap;
+        margin: 0; padding: 20px; display: flex; justify-content: center;
+    }
+
+    /* الحاوية اللي شايلة الساعة والموبايل */
+    .app-container {
+        display: flex; justify-content: center; align-items: flex-start; gap: 40px; flex-wrap: wrap;
+        transform-origin: top center; /* التصغير هيبدأ من فوق */
     }
     
     /* ----- Watch ----- */
@@ -40,7 +47,6 @@ html_code = """
     .watch-hr-label { font-size: 10px; color: #ff3b30; letter-spacing: 2px; font-weight: bold; margin-bottom: 10px; }
     .watch-spo2 { font-size: 22px; font-weight: bold; color: #32ade6; margin-bottom: 15px; }
     
-    /* أزرار الحالات جوه الساعة */
     .watch-nav { position: absolute; bottom: 15px; display: flex; gap: 10px; }
     .nav-btn {
         width: 32px; height: 32px; border-radius: 50%; background: #1c1c1e; border: 1px solid #333;
@@ -63,7 +69,6 @@ html_code = """
     .notch { width: 120px; height: 25px; background: #000; position: absolute; top: 0; left: 50%; transform: translateX(-50%); border-radius: 0 0 15px 15px; z-index: 10; border: 1px solid #111;}
     .status-bar { display: flex; justify-content: space-between; padding: 15px 20px 5px; font-size: 11px; font-weight: bold; color: #fff; }
     
-    /* Views */
     .view { display: none; flex-direction: column; height: 100%; padding: 10px 15px; }
     .view.active { display: flex; animation: fadeIn 0.3s; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -75,7 +80,6 @@ html_code = """
     .card-unit { font-size: 14px; color: #8e8e93; }
     .status-badge { padding: 4px 8px; border-radius: 8px; display: inline-block; font-size: 10px; font-weight: bold; margin-top: 5px; color: white; }
     
-    /* AI & WhatsApp Card */
     .ai-card { background: linear-gradient(135deg, #1e1e1e, #111); border: 1px solid #333; transition: 0.3s; }
     .ai-card.danger { border-color: #ff3b30; background: rgba(255,59,48,0.1); }
     .ai-msg { font-size: 13px; margin-top: 8px; color: #ddd; line-height: 1.4; }
@@ -86,124 +90,119 @@ html_code = """
     }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     
-    /* Chart Container */
     .chart-container { position: relative; height: 250px; width: 100%; margin-top: 10px; background: #1c1c1e; border-radius: 15px; padding: 10px;}
 
-    /* Bottom Nav */
-    .nav-bar { 
-        position: absolute; bottom: 0; width: 100%; height: 65px; background: #111; 
-        display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #333; 
-    }
+    .nav-bar { position: absolute; bottom: 0; width: 100%; height: 65px; background: #111; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #333; }
     .nav-item { font-size: 22px; cursor: pointer; opacity: 0.5; transition: 0.2s; }
     .nav-item.active { opacity: 1; transform: scale(1.1); }
+
+    /* ----- Responsive CSS (للشاشات الصغيرة زي الموبايل) ----- */
+    @media (max-width: 700px) {
+        .app-container {
+            transform: scale(0.6); /* تصغير الحجم لـ 60% */
+            flex-wrap: nowrap; /* نخليهم جنب بعض */
+            gap: 10px; /* تقليل المسافة بينهم */
+            margin-top: -50px; /* رفعهم لفوق شوية عشان التصغير بيسيب مساحة */
+        }
+    }
+
+    /* لو الشاشة أصغر من 400 بكسل (موبايلات صغيرة جداً) */
+    @media (max-width: 400px) {
+        .app-container {
+            transform: scale(0.45); /* تصغير أكتر */
+        }
+    }
 </style>
 </head>
 <body>
 
-    <!-- Watch -->
-    <div class="watch-wrapper">
-        <div class="strap top"></div>
-        <div class="watch-body" id="watch-body">
-            <div class="watch-screen" id="watch-screen">
-                <div class="watch-time">09:41</div>
-                <div class="watch-hr-container">
-                    <div class="watch-hr" id="watch-hr">75</div>
-                    <div class="heart-icon" id="heart-icon">❤️</div>
-                </div>
-                <div class="watch-hr-label">HEART RATE</div>
-                <div class="watch-spo2" id="watch-spo2">SpO2 98%</div>
-                
-                <!-- أزرار الحالات -->
-                <div class="watch-nav">
-                    <div class="nav-btn active" id="btn-normal" onclick="setMode('normal')" title="Normal">🟢</div>
-                    <div class="nav-btn" id="btn-sleep" onclick="setMode('sleep')" title="Sleep">😴</div>
-                    <div class="nav-btn" id="btn-stress" onclick="setMode('stress')" title="Stress">🔥</div>
-                    <div class="nav-btn" id="btn-fall" onclick="setMode('fall')" title="Fall">🚨</div>
+    <!-- الحاوية الرئيسية -->
+    <div class="app-container">
+        <!-- Watch -->
+        <div class="watch-wrapper">
+            <div class="strap top"></div>
+            <div class="watch-body" id="watch-body">
+                <div class="watch-screen" id="watch-screen">
+                    <div class="watch-time">09:41</div>
+                    <div class="watch-hr-container">
+                        <div class="watch-hr" id="watch-hr">75</div>
+                        <div class="heart-icon" id="heart-icon">❤️</div>
+                    </div>
+                    <div class="watch-hr-label">HEART RATE</div>
+                    <div class="watch-spo2" id="watch-spo2">SpO2 98%</div>
+                    
+                    <div class="watch-nav">
+                        <div class="nav-btn active" id="btn-normal" onclick="setMode('normal')" title="Normal">🟢</div>
+                        <div class="nav-btn" id="btn-sleep" onclick="setMode('sleep')" title="Sleep">😴</div>
+                        <div class="nav-btn" id="btn-stress" onclick="setMode('stress')" title="Stress">🔥</div>
+                        <div class="nav-btn" id="btn-fall" onclick="setMode('fall')" title="Fall">🚨</div>
+                    </div>
                 </div>
             </div>
+            <div class="strap bottom"></div>
         </div>
-        <div class="strap bottom"></div>
-    </div>
 
-    <!-- Phone -->
-    <div class="phone-body" id="phone-body">
-        <div class="notch"></div>
-        <div class="phone-screen">
-            <div class="status-bar"><span>09:41</span><span>📶 🔋 100%</span></div>
-            
-            <!-- View 1: Home -->
-            <div class="view active" id="view-home">
-                <div class="app-title">Health App</div>
-                <div class="card">
-                    <div class="card-title">Heart Rate</div>
-                    <div class="card-value" id="phone-hr">75 <span class="card-unit">BPM</span></div>
+        <!-- Phone -->
+        <div class="phone-body" id="phone-body">
+            <div class="notch"></div>
+            <div class="phone-screen">
+                <div class="status-bar"><span>09:41</span><span>📶 🔋 100%</span></div>
+                
+                <div class="view active" id="view-home">
+                    <div class="app-title">Health App</div>
+                    <div class="card">
+                        <div class="card-title">Heart Rate</div>
+                        <div class="card-value" id="phone-hr">75 <span class="card-unit">BPM</span></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Blood Oxygen</div>
+                        <div class="card-value" id="phone-spo2">98 <span class="card-unit">%</span></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Status</div>
+                        <div class="card-value" id="phone-status" style="font-size: 18px;">NORMAL</div>
+                        <div class="status-badge" id="phone-badge" style="background:#32d74b;">MONITORING</div>
+                    </div>
+                    <div class="card ai-card" id="ai-card">
+                        <div class="card-title">🧠 AI Assistant</div>
+                        <div class="ai-msg" id="phone-ai-msg">All vitals are stable. You are good to go!</div>
+                        <a href="#" class="wa-btn" id="wa-link" target="_blank">📲 Send WhatsApp SOS</a>
+                    </div>
                 </div>
-                <div class="card">
-                    <div class="card-title">Blood Oxygen</div>
-                    <div class="card-value" id="phone-spo2">98 <span class="card-unit">%</span></div>
-                </div>
-                <div class="card">
-                    <div class="card-title">Status</div>
-                    <div class="card-value" id="phone-status" style="font-size: 18px;">NORMAL</div>
-                    <div class="status-badge" id="phone-badge" style="background:#32d74b;">MONITORING</div>
-                </div>
-                <div class="card ai-card" id="ai-card">
-                    <div class="card-title">🧠 AI Assistant</div>
-                    <div class="ai-msg" id="phone-ai-msg">All vitals are stable. You are good to go!</div>
-                    <a href="#" class="wa-btn" id="wa-link" target="_blank">📲 Send WhatsApp SOS</a>
-                </div>
-            </div>
 
-            <!-- View 2: Heart Rate Chart -->
-            <div class="view" id="view-heart">
-                <div class="app-title">Heart Rate</div>
-                <div class="chart-container"><canvas id="hrChart"></canvas></div>
-                <div style="text-align: center; margin-top: 10px; color:#888; font-size: 12px;">Last 1 Hour (Live)</div>
-            </div>
+                <div class="view" id="view-heart">
+                    <div class="app-title">Heart Rate</div>
+                    <div class="chart-container"><canvas id="hrChart"></canvas></div>
+                    <div style="text-align: center; margin-top: 10px; color:#888; font-size: 12px;">Last 1 Hour (Live)</div>
+                </div>
 
-            <!-- View 3: Combined Chart -->
-            <div class="view" id="view-chart">
-                <div class="app-title">Health Trends</div>
-                <div class="chart-container"><canvas id="combinedChart"></canvas></div>
-                <div style="text-align: center; margin-top: 10px; color:#888; font-size: 12px;">HR & SpO2 (Last 1 Hour)</div>
-            </div>
+                <div class="view" id="view-chart">
+                    <div class="app-title">Health Trends</div>
+                    <div class="chart-container"><canvas id="combinedChart"></canvas></div>
+                    <div style="text-align: center; margin-top: 10px; color:#888; font-size: 12px;">HR & SpO2 (Last 1 Hour)</div>
+                </div>
 
-            <!-- Navigation -->
-            <div class="nav-bar">
-                <div class="nav-item active" id="nav-home" onclick="switchView('home')">🏠</div>
-                <div class="nav-item" id="nav-heart" onclick="switchView('heart')">❤️</div>
-                <div class="nav-item" id="nav-chart" onclick="switchView('chart')">📊</div>
+                <div class="nav-bar">
+                    <div class="nav-item active" id="nav-home" onclick="switchView('home')">🏠</div>
+                    <div class="nav-item" id="nav-heart" onclick="switchView('heart')">❤️</div>
+                    <div class="nav-item" id="nav-chart" onclick="switchView('chart')">📊</div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- إعدادات النظام ---
         let currentMode = 'normal';
         let currentHR = 75;
         let currentSpO2 = 98;
 
-        // 👇 هنا التعديل: ضفنا التوصيات الفورية للـ AI
         const modes = {
-            normal: { 
-                hr: 75, spo2: 98, status: "NORMAL", color: "#32d74b", danger: false,
-                ai: "✅ All vitals are stable. You are good to go! Keep up the good work and stay hydrated." 
-            },
-            sleep:  { 
-                hr: 55, spo2: 96, status: "SLEEPING", color: "#32ade6", danger: false,
-                ai: "😴 Sleep mode active. Ensure you are in a comfortable position and relax. Sweet dreams!" 
-            },
-            stress: { 
-                hr: 115, spo2: 97, status: "HIGH STRESS", color: "#ff9f0a", danger: false,
-                ai: "⚠️ Elevated heart rate detected. Please take a deep breath, sit down, drink a glass of water, and try to relax for 5 minutes." 
-            },
-            fall:   { 
-                hr: 145, spo2: 85, status: "EMERGENCY", color: "#ff3b30", danger: true,
-                ai: "🚨 CRITICAL EMERGENCY! Fall detected. If you are conscious, please stay still, take slow deep breaths to stabilize your heart rate, and seek help immediately. SOS sent." 
-            }
+            normal: { hr: 75, spo2: 98, status: "NORMAL", color: "#32d74b", danger: false, ai: "✅ All vitals are stable. You are good to go! Keep up the good work and stay hydrated." },
+            sleep:  { hr: 55, spo2: 96, status: "SLEEPING", color: "#32ade6", danger: false, ai: "😴 Sleep mode active. Ensure you are in a comfortable position and relax. Sweet dreams!" },
+            stress: { hr: 115, spo2: 97, status: "HIGH STRESS", color: "#ff9f0a", danger: false, ai: "⚠️ Elevated heart rate detected. Please take a deep breath, sit down, drink a glass of water, and try to relax for 5 minutes." },
+            fall:   { hr: 145, spo2: 85, status: "EMERGENCY", color: "#ff3b30", danger: true, ai: "🚨 CRITICAL EMERGENCY! Fall detected. If you are conscious, please stay still, take slow deep breaths to stabilize your heart rate, and seek help immediately. SOS sent." }
         };
 
-        // --- Charts Initialization ---
         let labels = Array.from({length: 60}, (_, i) => `${60-i}m ago`);
         let hrData = Array.from({length: 60}, () => 75 + Math.random() * 10);
         let spo2Data = Array.from({length: 60}, () => 97 + Math.random() * 2);
@@ -228,7 +227,6 @@ html_code = """
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, labels: {color: '#fff'} } }, scales: { x: { display: false }, y: { type: 'linear', display: true, position: 'left', textColor: '#ff3b30', grid: { color: '#333' } }, y1: { type: 'linear', display: true, position: 'right', textColor: '#32ade6', grid: { drawOnChartArea: false } } } }
         });
 
-        // --- Switch Views ---
         function switchView(viewName) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -238,27 +236,19 @@ html_code = """
             if(viewName === 'chart') combinedChart.update();
         }
 
-        // --- Set Mode (Watch Buttons) ---
         function setMode(modeName) {
             currentMode = modeName;
             const mode = modes[modeName];
-
-            // UI Buttons
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('btn-' + modeName).classList.add('active');
-
-            // Watch UI
             document.getElementById('watch-hr').innerText = mode.hr;
             document.getElementById('watch-spo2').innerText = 'SpO2 ' + mode.spo2 + '%';
-            
-            // Phone UI
             document.getElementById('phone-hr').innerHTML = mode.hr + ' <span class="card-unit">BPM</span>';
             document.getElementById('phone-spo2').innerHTML = mode.spo2 + ' <span class="card-unit">%</span>';
             document.getElementById('phone-status').innerText = mode.status;
             document.getElementById('phone-badge').style.background = mode.color;
             document.getElementById('phone-ai-msg').innerText = mode.ai;
-
-            // Danger State
+            
             const phoneBody = document.getElementById('phone-body');
             const watchBody = document.getElementById('watch-body');
             const aiCard = document.getElementById('ai-card');
@@ -269,41 +259,33 @@ html_code = """
                 watchBody.classList.add('emergency');
                 aiCard.classList.add('danger');
                 waBtn.style.display = 'block';
-                
                 let msg = encodeURIComponent("🚨 EMERGENCY! Patient vitals critical. HR: " + mode.hr + " BPM, SpO2: " + mode.spo2 + "%. Fall Detected.");
-                waBtn.href = "https://wa.me/201283605279?text=" + msg; // ضع رقمك هنا
+                waBtn.href = "https://wa.me/201283605279?text=" + msg;
             } else {
                 phoneBody.classList.remove('emergency');
                 watchBody.classList.remove('emergency');
                 aiCard.classList.remove('danger');
                 waBtn.style.display = 'none';
             }
-            
-            // Reset current values for auto-update
             currentHR = mode.hr;
             currentSpO2 = mode.spo2;
             updateHeartbeat(mode.hr);
         }
 
         function updateHeartbeat(hr) {
-            const heartIcon = document.getElementById('heart-icon');
-            heartIcon.style.animationDuration = (60 / hr) + 's';
+            document.getElementById('heart-icon').style.animationDuration = (60 / hr) + 's';
         }
 
-        // --- التحديث التلقائي كل 3 ثواني ---
         setInterval(() => {
-            // تغير طبيعي بسيط
             let newHR = currentHR + Math.round(Math.random() * 4 - 2);
             let newSpO2 = currentSpO2 + Math.round(Math.random() * 2 - 1);
             
-            // الحفاظ على الأرقام منطقية
             if (currentMode === 'normal' || currentMode === 'sleep') {
                 if (newHR < 50) newHR = 50;
                 if (newHR > 100) newHR = 100;
                 if (newSpO2 > 100) newSpO2 = 100;
                 if (newSpO2 < 95) newSpO2 = 95;
             } else {
-                // لو في حالة خطر، الأرقام تفضل عالية
                 newHR = currentHR + Math.round(Math.random() * 6 - 3);
                 newSpO2 = currentSpO2 + Math.round(Math.random() * 2 - 1);
             }
@@ -311,24 +293,19 @@ html_code = """
             currentHR = newHR;
             currentSpO2 = newSpO2;
 
-            // تحديث الساعة
             document.getElementById('watch-hr').innerText = newHR;
             document.getElementById('watch-spo2').innerText = 'SpO2 ' + newSpO2 + '%';
             updateHeartbeat(newHR);
 
-            // تحديث الموبايل
             document.getElementById('phone-hr').innerHTML = newHR + ' <span class="card-unit">BPM</span>';
             document.getElementById('phone-spo2').innerHTML = newSpO2 + ' <span class="card-unit">%</span>';
 
-            // تحديث الرسومات
             hrData.push(newHR); hrData.shift();
             spo2Data.push(newSpO2); spo2Data.shift();
             hrChart.update();
             combinedChart.update();
-
         }, 3000);
 
-        // Start in normal mode
         setMode('normal');
     </script>
 </body>
