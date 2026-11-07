@@ -4,7 +4,7 @@ import streamlit.components.v1 as components
 st.set_page_config(page_title="Smart Wearable", page_icon="⌚", layout="wide")
 
 # ==========================================
-# كود الـ HTML والـ JavaScript الكامل
+# كود الـ HTML والـ JavaScript الكامل (Smartwatch OS)
 # ==========================================
 html_code = """
 <!DOCTYPE html>
@@ -20,7 +20,7 @@ html_code = """
         display: flex; justify-content: center; align-items: flex-start; gap: 50px; min-height: 100vh; margin: 0; padding: 20px; flex-wrap: wrap;
     }
     
-    /* ----- Watch ----- */
+    /* ----- Watch Design ----- */
     .watch-wrapper { display: flex; flex-direction: column; align-items: center; }
     .strap { width: 100px; height: 80px; background: #222; border-radius: 20px; border: 2px solid #444; }
     .strap.top { margin-bottom: -10px; }
@@ -31,30 +31,44 @@ html_code = """
     }
     .watch-screen {
         width: 100%; height: 100%; background: #000; border-radius: 50px; display: flex; flex-direction: column;
-        align-items: center; padding-top: 20px; position: relative; overflow: hidden;
+        align-items: center; position: relative; overflow: hidden; transition: background 0.5s;
     }
+    .watch-screen.emergency-bg { background: #2a0000; }
     .watch-crown { position: absolute; right: -12px; top: 70px; width: 8px; height: 45px; background: #555; border-radius: 5px; }
     
-    .watch-time { color: #888; font-size: 12px; margin-bottom: 5px; }
-    .watch-hr { font-size: 55px; font-weight: 800; color: #ff3b30; line-height: 1; margin: 0; text-shadow: 0 0 15px rgba(255,59,48,0.4); transition: 0.2s; }
-    .watch-hr-label { font-size: 10px; color: #ff3b30; letter-spacing: 2px; font-weight: bold; margin-bottom: 15px; }
-    .watch-spo2 { font-size: 24px; font-weight: bold; color: #32ade6; margin-bottom: 10px; transition: 0.2s;}
+    /* Watch UI Elements */
+    .watch-time { color: #888; font-size: 11px; margin-top: 15px; margin-bottom: 5px; font-weight: 600;}
+    .watch-hr-container { display: flex; align-items: center; justify-content: center; gap: 5px; }
+    .watch-hr { font-size: 55px; font-weight: 800; color: #ff3b30; line-height: 1; margin: 0; transition: 0.3s; }
+    .heart-icon { font-size: 24px; color: #ff3b30; animation: beat 1s infinite; }
     
-    /* Sliders inside Watch */
-    .control-group { width: 80%; text-align: left; margin-bottom: 10px; }
-    .control-label { font-size: 10px; color: #aaa; margin-bottom: 2px; display: flex; justify-content: space-between;}
-    input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
-    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 15px; width: 15px; border-radius: 50%; background: #fff; cursor: pointer; margin-top: -5px; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
-    input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 5px; cursor: pointer; background: #333; border-radius: 5px; }
-    .fall-btn { background: #ff3b30; color: white; border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 12px; cursor: pointer; margin-top: 5px; box-shadow: 0 0 10px rgba(255,59,48,0.5); }
+    .watch-hr-label { font-size: 10px; color: #ff3b30; letter-spacing: 2px; font-weight: bold; margin-bottom: 10px; }
+    .watch-spo2 { font-size: 22px; font-weight: bold; color: #32ade6; margin-bottom: 15px; transition: 0.3s;}
+    
+    /* Nav Buttons (Bottom of Watch) */
+    .watch-nav { position: absolute; bottom: 15px; display: flex; gap: 12px; }
+    .nav-btn {
+        width: 30px; height: 30px; border-radius: 50%; background: #1c1c1e; border: 1px solid #333;
+        display: flex; justify-content: center; align-items: center; font-size: 14px; cursor: pointer;
+        transition: 0.2s; opacity: 0.6;
+    }
+    .nav-btn:hover { opacity: 1; }
+    .nav-btn.active { opacity: 1; border-color: #0a84ff; background: rgba(10,132,255,0.2); box-shadow: 0 0 10px rgba(10,132,255,0.5);}
 
-    /* ----- Phone ----- */
+    @keyframes beat {
+        0% { transform: scale(1); }
+        15% { transform: scale(1.3); }
+        30% { transform: scale(1); }
+        45% { transform: scale(1.3); }
+        60% { transform: scale(1); }
+    }
+
+    /* ----- Phone Design ----- */
     .phone-body {
         width: 320px; height: 650px; background: #111; border-radius: 45px; border: 6px solid #333;
         padding: 12px; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.9); transition: 0.3s;
     }
     .phone-body.emergency { border-color: #ff3b30; box-shadow: 0 0 40px rgba(255,59,48,0.4); }
-    
     .phone-screen {
         width: 100%; height: 100%; background: #000; border-radius: 35px; position: relative; overflow: hidden;
         display: flex; flex-direction: column;
@@ -67,7 +81,6 @@ html_code = """
     .card-title { font-size: 11px; color: #8e8e93; text-transform: uppercase; letter-spacing: 1px; }
     .card-value { font-size: 28px; font-weight: bold; }
     .card-unit { font-size: 14px; color: #8e8e93; }
-    
     .status-badge { padding: 5px 10px; border-radius: 10px; display: inline-block; font-size: 12px; font-weight: bold; margin-top: 5px; color: white; }
     
     /* AI Assistant Card */
@@ -75,46 +88,45 @@ html_code = """
     .ai-card.danger { border-color: #ff3b30; background: rgba(255,59,48,0.1); }
     .ai-msg { font-size: 13px; margin-top: 8px; color: #ddd; line-height: 1.4; }
     
-    /* WhatsApp Button inside Phone */
     .wa-btn {
         display: none; background: #25D366; color: white; padding: 12px; border-radius: 12px; 
         text-decoration: none; font-weight: bold; text-align: center; margin-top: 10px;
         font-size: 14px; box-shadow: 0 4px 15px rgba(37,211,102,0.4); animation: pulse 1.5s infinite;
     }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     
     .nav-bar { position: absolute; bottom: 0; width: 100%; height: 70px; background: rgba(28,28,30,0.9); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #333; font-size: 20px; }
-
-    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 </style>
 </head>
 <body>
 
-    <!-- Watch -->
+    <!-- Smartwatch -->
     <div class="watch-wrapper">
         <div class="strap top"></div>
         <div class="watch-body">
             <div class="watch-crown"></div>
-            <div class="watch-screen">
-                <div class="watch-time">09:41</div>
-                <div class="watch-hr" id="display-hr">75</div>
+            <div class="watch-screen" id="watch-screen">
+                <div class="watch-time" id="watch-time">09:41</div>
+                <div class="watch-hr-container">
+                    <div class="watch-hr" id="display-hr">75</div>
+                    <div class="heart-icon" id="heart-icon">❤️</div>
+                </div>
                 <div class="watch-hr-label">HEART RATE</div>
                 <div class="watch-spo2" id="display-spo2">SpO2 98%</div>
                 
-                <div class="control-group">
-                    <div class="control-label"><span>Heart Rate</span><span id="val-hr">75</span></div>
-                    <input type="range" id="slider-hr" min="40" max="160" value="75" oninput="updateData()">
+                <!-- Watch Navigation (Simulating swipe pages) -->
+                <div class="watch-nav">
+                    <div class="nav-btn active" id="btn-normal" onclick="setMode('normal')" title="Normal">🟢</div>
+                    <div class="nav-btn" id="btn-sleep" onclick="setMode('sleep')" title="Sleep">😴</div>
+                    <div class="nav-btn" id="btn-stress" onclick="setMode('stress')" title="Stress">🔥</div>
+                    <div class="nav-btn" id="btn-fall" onclick="setMode('fall')" title="Fall">🚨</div>
                 </div>
-                <div class="control-group">
-                    <div class="control-label"><span>SpO2</span><span id="val-spo2">98</span></div>
-                    <input type="range" id="slider-spo2" min="80" max="100" value="98" oninput="updateData()">
-                </div>
-                <button class="fall-btn" id="fall-btn" onclick="toggleFall()">Simulate Fall</button>
             </div>
         </div>
         <div class="strap bottom"></div>
     </div>
 
-    <!-- Phone -->
+    <!-- Smartphone -->
     <div class="phone-body" id="phone-body">
         <div class="notch"></div>
         <div class="phone-screen">
@@ -137,11 +149,9 @@ html_code = """
                 <div class="status-badge" id="phone-badge" style="background:#32d74b;">MONITORING</div>
             </div>
 
-            <!-- AI & WhatsApp inside the App -->
             <div class="card ai-card" id="ai-card">
                 <div class="card-title">🧠 AI Assistant</div>
                 <div class="ai-msg" id="phone-ai-msg">All vitals are stable. You are good to go!</div>
-                
                 <a href="#" class="wa-btn" id="wa-link" target="_blank">📲 Send WhatsApp SOS</a>
             </div>
 
@@ -155,87 +165,63 @@ html_code = """
     </div>
 
     <script>
-        let isFall = false;
+        // Data for all modes
+        const modes = {
+            normal: { hr: 75, spo2: 98, status: "NORMAL", color: "#32d74b", ai: "✅ All vitals are stable. You are good to go!", danger: false },
+            sleep:  { hr: 55, spo2: 96, status: "SLEEPING", color: "#32ade6", ai: "😴 Sleep mode active. Tracking sleep cycles...", danger: false },
+            stress: { hr: 115, spo2: 97, status: "HIGH STRESS", color: "#ff9f0a", ai: "⚠️ Elevated heart rate detected. You seem stressed. Please take a deep breath.", danger: false },
+            fall:   { hr: 145, spo2: 85, status: "EMERGENCY", color: "#ff3b30", ai: "🚨 CRITICAL EMERGENCY! Fall detected and SpO2 is dropping. Immediate assistance required.", danger: true }
+        };
 
-        function toggleFall() {
-            isFall = !isFall;
-            const btn = document.getElementById('fall-btn');
-            if(isFall) {
-                btn.style.background = '#880000';
-                btn.innerText = 'RESET FALL';
-                document.getElementById('slider-hr').value = 140;
-                document.getElementById('slider-spo2').value = 85;
-            } else {
-                btn.style.background = '#ff3b30';
-                btn.innerText = 'Simulate Fall';
-                document.getElementById('slider-hr').value = 75;
-                document.getElementById('slider-spo2').value = 98;
-            }
-            updateData();
-        }
+        function setMode(modeName) {
+            const mode = modes[modeName];
 
-        function updateData() {
-            let hr = parseInt(document.getElementById('slider-hr').value);
-            let spo2 = parseInt(document.getElementById('slider-spo2').value);
+            // 1. Update Active Button UI
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + modeName).classList.add('active');
 
-            // Update Watch UI
-            document.getElementById('display-hr').innerText = hr;
-            document.getElementById('display-spo2').innerText = 'SpO2 ' + spo2 + '%';
-            document.getElementById('val-hr').innerText = hr;
-            document.getElementById('val-spo2').innerText = spo2;
+            // 2. Update Watch UI
+            document.getElementById('display-hr').innerText = mode.hr;
+            document.getElementById('display-spo2').innerText = 'SpO2 ' + mode.spo2 + '%';
+            
+            // Adjust Heartbeat Animation Speed
+            const heartIcon = document.getElementById('heart-icon');
+            let beatDuration = 60 / mode.hr; // 60 seconds / BPM
+            heartIcon.style.animationDuration = beatDuration + 's';
 
-            // Update Phone UI
-            document.getElementById('phone-hr').innerHTML = hr + ' <span class="card-unit">BPM</span>';
-            document.getElementById('phone-spo2').innerHTML = spo2 + ' <span class="card-unit">%</span>';
+            // 3. Update Phone UI
+            document.getElementById('phone-hr').innerHTML = mode.hr + ' <span class="card-unit">BPM</span>';
+            document.getElementById('phone-spo2').innerHTML = mode.spo2 + ' <span class="card-unit">%</span>';
+            document.getElementById('phone-status').innerText = mode.status;
+            document.getElementById('phone-badge').style.background = mode.color;
 
-            // Get DOM Elements for AI & State
-            let phoneBody = document.getElementById('phone-body');
-            let aiCard = document.getElementById('ai-card');
-            let aiMsg = document.getElementById('phone-ai-msg');
-            let waBtn = document.getElementById('wa-link');
+            // 4. Handle Danger/WhatsApp State
+            const phoneBody = document.getElementById('phone-body');
+            const watchScreen = document.getElementById('watch-screen');
+            const aiCard = document.getElementById('ai-card');
+            const waBtn = document.getElementById('wa-link');
+            const aiMsg = document.getElementById('phone-ai-msg');
 
-            // Logic
-            if (isFall || hr > 120 || spo2 < 90) {
-                // EMERGENCY STATE
-                document.getElementById('phone-status').innerText = "EMERGENCY";
-                document.getElementById('phone-badge').style.background = "#ff3b30";
-                
-                // Make phone glow red
+            aiMsg.innerText = mode.ai;
+
+            if (mode.danger) {
                 phoneBody.classList.add('emergency');
-                
-                // AI Card update
+                watchScreen.classList.add('emergency-bg');
                 aiCard.classList.add('danger');
-                aiMsg.innerHTML = "<strong style='color:#ff3b30;'>🚨 CRITICAL EMERGENCY!</strong><br>Fall detected or vitals are critical. Immediate assistance required.";
-                
-                // Show WhatsApp Button
                 waBtn.style.display = 'block';
-                let msg = encodeURIComponent("🚨 EMERGENCY! Patient vitals critical. HR: " + hr + " BPM, SpO2: " + spo2 + "%. Fall Detected: " + isFall);
-                waBtn.href = "https://wa.me/201283605279?text=" + msg; // رقمك هنا
                 
-            } else if (hr > 100) {
-                // HIGH STRESS
-                document.getElementById('phone-status').innerText = "HIGH STRESS";
-                document.getElementById('phone-badge').style.background = "#ff9f0a";
-                phoneBody.classList.remove('emergency');
-                
-                aiCard.classList.remove('danger');
-                aiMsg.innerText = "⚠️ Elevated heart rate detected. You seem stressed. Please take a deep breath.";
-                waBtn.style.display = 'none';
-                
+                let msg = encodeURIComponent("🚨 EMERGENCY! Patient vitals critical. HR: " + mode.hr + " BPM, SpO2: " + mode.spo2 + "%. Fall Detected.");
+                waBtn.href = "https://wa.me/201283605279?text=" + msg; // ضع رقمك هنا
             } else {
-                // NORMAL STATE
-                document.getElementById('phone-status').innerText = "NORMAL";
-                document.getElementById('phone-badge').style.background = "#32d74b";
                 phoneBody.classList.remove('emergency');
-                
+                watchScreen.classList.remove('emergency-bg');
                 aiCard.classList.remove('danger');
-                aiMsg.innerText = "✅ All vitals are stable. You are good to go!";
                 waBtn.style.display = 'none';
             }
         }
 
-        // Initialize
-        updateData();
+        // Set initial state on load
+        setMode('normal');
     </script>
 </body>
 </html>
